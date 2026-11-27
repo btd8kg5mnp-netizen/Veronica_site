@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Записи клиентов — VERONIKA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme:light; --ink:#24231f; --muted:#807c74; --paper:#f7f5ef; --line:#dedbd3; --tint:#eae4dc; }
+    * {box-sizing:border-box}
+    body {margin:0; background:var(--paper); color:var(--ink); font-family:Manrope,system-ui,sans-serif; }
+    main {width:min(1100px,calc(100% - 36px)); margin:0 auto;}
+    header {border-bottom:1px solid var(--line); padding:29px 0; display:flex; justify-content:space-between; align-items:center; gap:16px;}
+    .brand {font:italic 42px/1 "Instrument Serif",Georgia,serif; letter-spacing:-.04em;}
+    .eyebrow {font:11px/1.5 "DM Mono",monospace; color:var(--muted); letter-spacing:.08em; text-transform:uppercase;}
+    .intro {padding:58px 0 38px;}
+    h1 {font-size:clamp(40px,6vw,76px); line-height:1; margin:12px 0 20px; letter-spacing:-.055em; font-weight:500;}
+    .intro p {font-size:14px; color:var(--muted); line-height:1.7; max-width:580px;}
+    .controls {display:flex; align-items:end; gap:12px; flex-wrap:wrap; padding:0 0 30px;}
+    label {font-size:12px; display:flex; flex-direction:column; gap:9px; min-width:min(340px,100%); flex:1;}
+    input {width:100%; background:#fff; border:1px solid var(--line); border-radius:7px; font:inherit; padding:16px 15px; color:var(--ink);}
+    input:focus-visible {outline:2px solid #b38a78; outline-offset:1px}
+    button {cursor:pointer; border:0; border-radius:7px; padding:17px 24px; background:var(--ink); color:#fff; font:600 13px Manrope,sans-serif;}
+    button:disabled {opacity:.5;cursor:progress}
+    #status {min-height:21px; font-size:13px; color:var(--muted); margin-bottom:22px}
+    #status.error {color:#a24636}
+    .count {padding:14px 0; font:12px "DM Mono",monospace; color:var(--muted); border-bottom:1px solid var(--line);}
+    .table-wrap {overflow-x:auto; background:#fff; border:1px solid var(--line); border-radius:9px; margin:20px 0 65px;}
+    table {border-collapse:collapse; width:100%; min-width:850px; text-align:left;}
+    th {font:11px "DM Mono",monospace; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); background:#f1efe9; }
+    td, th {padding:21px 18px; border-bottom:1px solid var(--line);}
+    tr:last-child td {border-bottom:0}
+    td {font-size:13px;}
+    td.name {font-weight:700;}
+    td.phone {font-family:"DM Mono",monospace;font-size:12px;}
+    .empty {padding:32px 18px; text-align:center;color:var(--muted);}
+    .footer {border-top:1px solid var(--line);padding:18px 0 30px;display:flex;justify-content:space-between;gap:12px;font:11px "DM Mono",monospace;color:var(--muted)}
+    @media(max-width:640px) {.intro{padding-top:37px}.brand{font-size:36px}.controls>button{width:100%}.footer{flex-direction:column}}
+    .break-section {border-top:1px solid var(--line);padding:36px 0 46px;}
+    .break-section h2 {font-size:clamp(26px,4vw,44px);font-weight:500;letter-spacing:-.045em;line-height:1.1;margin:10px 0;}
+    .break-section p {font-size:13px;color:var(--muted);line-height:1.7;max-width:670px;}
+    .break-form {display:grid;grid-template-columns:1.3fr 1fr 1fr 2fr auto;align-items:end;gap:12px;margin:23px 0 12px;}
+    .break-form label {min-width:0;}
+    .break-form input {min-width:0;}
+    .break-actions {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0;}
+    .ghost {background:transparent;border:1px solid var(--line);color:var(--ink);}
+    .small-button {padding:9px 12px;font-size:12px;}
+    .break-list {display:grid;gap:10px;margin:12px 0 0;padding:0;list-style:none;}
+    .break-list li {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border:1px solid var(--line);border-radius:8px;background:#fff;}
+    .break-list time {font:12px "DM Mono",monospace;}
+    .break-list strong {font-size:13px;font-weight:600;}
+    .break-list span {font-size:12px;color:var(--muted);}
+    @media(max-width:900px) {.break-form{grid-template-columns:repeat(2,minmax(0,1fr))}.break-form label:last-of-type{grid-column:1/-1}.break-form button{grid-column:1/-1}}
+    @media(max-width:480px) {.break-form{grid-template-columns:1fr}.break-form label:last-of-type,.break-form button{grid-column:auto}.break-list li{align-items:flex-start;flex-direction:column}}
+    .entry-actions {display:flex;flex-wrap:wrap;align-items:center;gap:7px;}
+    .action-button {border-radius:6px;padding:9px 11px;font-size:11px;white-space:nowrap;}
+    .danger {background:#fff8f6;color:#a24636;border:1px solid #e9c7be;}
+    .danger:hover {background:#fbe9e4;}
+    .contact-section{margin:20px 0 24px;padding:22px;border:1px solid #d6c7b8;border-radius:9px;background:#f9f5ef;display:grid;gap:11px;}
+    .contact-section[hidden]{display:none;}
+    .contact-section h2{font-size:20px;font-weight:600;margin:0;letter-spacing:-.03em;}
+    .contact-section p{margin:0;font-size:13px;line-height:1.6;color:var(--muted);}
+    .contact-section textarea{width:100%;min-height:92px;resize:vertical;padding:12px;border-radius:7px;border:1px solid var(--line);font:13px/1.6 Manrope,sans-serif;}
+    .contact-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .contact-actions a{display:inline-block;padding:12px 16px;background:#252322;color:white;border-radius:7px;font:600 12px Manrope,sans-serif;text-decoration:none;}
+    .contact-actions button{padding:12px 16px;}
+    .contact-actions .ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    .sms-test{margin:18px 0 24px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+    .sms-test h2{margin:0 0 6px;font-size:17px;font-weight:600}
+    .sms-test p{margin:0;color:var(--muted);font:12px/1.6 Manrope,sans-serif;max-width:580px}
+    .sms-test .sms-test-response{margin-top:6px;color:#a24636}
+    .sms-test button{white-space:nowrap}
+    .edit-section {padding:30px;background:#fff;border:1px solid var(--line);border-radius:10px;margin:-33px 0 65px;}
+    .edit-section[hidden] {display:none;}
+    .edit-section h2 {font-size:clamp(24px,3.2vw,38px);font-weight:500;letter-spacing:-.045em;margin:8px 0 12px;}
+    .edit-desc {color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 22px;}
+    .edit-fields {display:grid;grid-template-columns:1fr 1fr auto auto;gap:12px;align-items:end;}
+    .edit-fields label {min-width:0;}
+    .edit-fields input {min-width:0;}
+    .edit-notice {font-size:13px;line-height:1.6;color:var(--muted);min-height:20px;}
+    .edit-notice.error {color:#a24636;}
+    @media(max-width:750px){.edit-fields{grid-template-columns:1fr 1fr}.edit-fields button{width:100%}}
+    @media(max-width:480px){.edit-fields{grid-template-columns:1fr}.edit-section{padding:20px}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="brand">veronika.</span>
+    <span class="eyebrow">STUDIO / ADMIN</span>
+  </header>
+  <section class="intro">
+    <span class="eyebrow">Бронирования / Клиенты</span>
+    <h1>Журнал записей<span style="font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400">.</span></h1>
+    <p>Просмотр записей из PostgreSQL: имя клиента, телефон, услуга, дата и время. Доступ только по секретному ключу мастера.</p>
+  </section>
+
+  <div class="controls">
+    <label for="token">Ключ администратора
+      <input id="token" type="password" placeholder="Введите ADMIN_TOKEN" autocomplete="off" spellcheck="false">
+    </label>
+    <button id="load" type="button">Показать записи ↗</button>
+  </div>
+  <div id="status" role="status" aria-live="polite"></div>
+  <section class="sms-test" aria-label="Проверка P1SMS">
+    <div>
+      <h2>Проверка SMS · P1SMS</h2>
+      <p>Отправить одно тестовое сообщение только на свой номер, указанный в настройках ONREZA. Это может списать средства с пробного баланса. Не более одного теста в день.</p>
+      <p id="sms-test-status" class="sms-test-response" role="status"></p>
+    </div>
+    <button id="sms-test-button" type="button" class="ghost">Проверить SMS ↗</button>
+  </section>
+  <section class="contact-section" id="contact-section" hidden aria-live="polite">
+    <h2 id="contact-title">Связаться с клиентом</h2>
+    <p id="contact-description"></p>
+    <textarea id="contact-message" aria-label="Текст сообщения клиенту"></textarea>
+    <div class="contact-actions">
+      <a id="contact-whatsapp" target="_blank" rel="noopener noreferrer">Написать в WhatsApp ↗</a>
+      <button id="contact-copy" type="button" class="ghost">Скопировать текст</button>
+      <button id="contact-dismiss" type="button" class="ghost">Закрыть</button>
+    </div>
+  </section>
+  <div id="count" class="count">Записи скрыты до авторизации</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Время</th>
+          <th>Имя клиента</th>
+          <th>Номер телефона</th>
+          <th>Услуга</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="6" class="empty">Введите ключ администратора, чтобы открыть записи.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <section class="edit-section" id="edit-section" aria-labelledby="edit-title" hidden>
+    <span class="eyebrow">Журнал / Перенос записи</span>
+    <h2 id="edit-title">Изменить время<span style="font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400">.</span></h2>
+    <p class="edit-desc" id="edit-description">Поменяйте дату или время. API проверит занятость и рабочее расписание.</p>
+    <form id="edit-form">
+      <div class="edit-fields">
+        <label for="edit-date">Новая дата
+          <input type="date" id="edit-date" required>
+        </label>
+        <label for="edit-time">Новое время
+          <input type="time" id="edit-time" min="12:00" max="19:59" step="60" required>
+        </label>
+        <button type="submit" id="edit-save">Сохранить ↗</button>
+        <button type="button" class="ghost" id="edit-cancel">Отмена</button>
+      </div>
+    </form>
+    <p class="edit-notice" id="edit-notice" role="status" aria-live="polite"></p>
+  </section>
+  <section class="break-section" aria-labelledby="break-title">
+    <span class="eyebrow">Расписание / Закрытые окна</span>
+    <h2 id="break-title">Перерывы мастера<span style="font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400">.</span></h2>
+    <p>Закройте отдельный час или целый день. Такие промежутки автоматически исключаются из свободного времени клиентов. Между приёмами автоматически учитываются 15 минут на подготовку рабочего места.</p>
+    <form class="break-form" id="break-form">
+      <label for="break-date">Дата
+        <input type="date" id="break-date" required>
+      </label>
+      <label for="break-start">Начало
+        <input type="time" id="break-start" min="12:00" max="19:59" value="15:00" step="60" required>
+      </label>
+      <label for="break-end">Конец
+        <input type="time" id="break-end" min="12:01" max="20:00" value="16:00" step="60" required>
+      </label>
+      <label for="break-note">Причина (необязательно)
+        <input type="text" id="break-note" placeholder="Например, личный перерыв" maxlength="120">
+      </label>
+      <button type="submit" id="save-break">Закрыть время ↗</button>
+    </form>
+    <div class="break-actions">
+      <span id="break-status" role="status" aria-live="polite" style="font-size:13px;color:var(--muted)">Введите ключ администратора выше.</span>
+      <button class="ghost small-button" id="refresh-breaks" type="button">Обновить список</button>
+    </div>
+    <ul class="break-list" id="break-list">
+      <li><span>Список перерывов появится после авторизации.</span></li>
+    </ul>
+  </section>
+  <div class="footer"><span>© VERONIKA — PRIVATE DASHBOARD</span><span>Не передавайте ключ посторонним</span></div>
+</main>
+<script>
+(() => {
+  const input = document.getElementById("token");
+  const button = document.getElementById("load");
+  const rows = document.getElementById("rows");
+  const count = document.getElementById("count");
+  const status = document.getElementById("status");
+  const fields = ["date", "time", "name", "phone", "service"];
+  const contactSection = document.getElementById("contact-section");
+  const contactTitle = document.getElementById("contact-title");
+  const contactDescription = document.getElementById("contact-description");
+  const contactMessage = document.getElementById("contact-message");
+  const contactWhatsApp = document.getElementById("contact-whatsapp");
+  const contactCopy = document.getElementById("contact-copy");
+  document.getElementById("contact-dismiss").addEventListener("click", () => { contactSection.hidden = true; });
+  contactCopy.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(contactMessage.value); contactCopy.textContent = "Скопировано ✓"; }
+    catch (_error) { contactMessage.select(); contactCopy.textContent = "Выделено — нажмите Cmd+C"; }
+  });
+  const editSection = document.getElementById("edit-section");
+  const editForm = document.getElementById("edit-form");
+  const editDate = document.getElementById("edit-date");
+  const editTime = document.getElementById("edit-time");
+  const editSave = document.getElementById("edit-save");
+  const editCancel = document.getElementById("edit-cancel");
+  const editDescription = document.getElementById("edit-description");
+  const editNotice = document.getElementById("edit-notice");
+  let selectedBooking = null;
+  const breakForm = document.getElementById("break-form");
+  const breakStatus = document.getElementById("break-status");
+  const breakList = document.getElementById("break-list");
+  const breakDate = document.getElementById("break-date");
+  const breakStart = document.getElementById("break-start");
+  const breakEnd = document.getElementById("break-end");
+  const breakNote = document.getElementById("break-note");
+  const saveBreak = document.getElementById("save-break");
+  const refreshBreaks = document.getElementById("refresh-breaks");
+  function todayInMoscow() {
+    const values = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Moscow", year: "numeric", month: "2-digit", day: "2-digit"
+    }).formatToParts(new Date());
+    const get = type => values.find(part => part.type === type).value;
+    return get("year") + "-" + get("month") + "-" + get("day");
+  }
+  breakDate.min = todayInMoscow();
+  breakDate.value = breakDate.min;
+
+  const getKey = () => input.value.trim();
+  const noticeBreak = text => { breakStatus.textContent = text; };
+  const request = async (url, options = {}) => {
+    const token = getKey();
+    if (!token) throw new Error("Сначала введите ключ администратора.");
+    const headers = { Authorization: "Bearer " + token };
+    if (options.body) headers["Content-Type"] = "application/json";
+    const response = await fetch(url, { ...options, headers, cache: "no-store" });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Ошибка API");
+    return data;
+  };
+  document.getElementById("sms-test-button").addEventListener("click", async event => {
+    const control = event.currentTarget;
+    if (!getKey()) return setStatus("Сначала введите ADMIN_TOKEN.", true);
+    if (!confirm("Отправить одно пробное SMS на P1SMS_TEST_PHONE? Может списаться часть баланса 40 ₽. Продолжить?")) return;
+    control.disabled = true;
+    const feedback = document.getElementById("sms-test-status");
+    feedback.textContent = "Отправляем один тестовый запрос...";
+    try {
+      const result = await request("/api/admin/p1sms/test", { method: "POST" });
+      feedback.textContent = result.message || "Запрос принят провайдером. Проверьте свой телефон.";
+    } catch (error) {
+      feedback.textContent = error.message;
+    } finally { control.disabled = false; }
+  });
+
+  async function loadBreaks() {
+    noticeBreak("Загружаем перерывы...");
+    try {
+      const data = await request("/api/breaks");
+      breakList.replaceChildren();
+      const items = Array.isArray(data.breaks) ? data.breaks : [];
+      if (!items.length) {
+        const li = document.createElement("li");
+        li.textContent = "Перерывов пока нет.";
+        breakList.appendChild(li);
+      }
+      for (const item of items) {
+        const li = document.createElement("li");
+        const details = document.createElement("div");
+        const date = document.createElement("time");
+        date.textContent = item.date + " / " + item.start + "–" + item.end;
+        const note = document.createElement("div");
+        note.textContent = item.note || "Время закрыто";
+        note.style.marginTop = "4px";
+        details.append(date, note);
+        const remove = document.createElement("button");
+        remove.className = "ghost small-button";
+        remove.type = "button";
+        remove.textContent = "Открыть время";
+        remove.setAttribute("aria-label", "Удалить перерыв " + date.textContent);
+        remove.addEventListener("click", async () => {
+          remove.disabled = true;
+          try {
+            await request("/api/breaks/" + encodeURIComponent(item.id), { method: "DELETE" });
+            await loadBreaks();
+          } catch (error) {
+            noticeBreak(error.message);
+            remove.disabled = false;
+          }
+        });
+        li.append(details, remove);
+        breakList.appendChild(li);
+      }
+      noticeBreak("Перерывов: " + items.length);
+    } catch (error) {
+      noticeBreak(error.message);
+    }
+  }
+  breakForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!breakForm.reportValidity()) return;
+    if (breakStart.value >= breakEnd.value) {
+      return noticeBreak("Время начала должно быть раньше конца.");
+    }
+    saveBreak.disabled = true;
+    noticeBreak("Сохраняем перерыв...");
+    try {
+      await request("/api/breaks", {
+        method: "POST",
+        body: JSON.stringify({
+          date: breakDate.value,
+          start: breakStart.value,
+          end: breakEnd.value,
+          note: breakNote.value.trim()
+        })
+      });
+      breakNote.value = "";
+      await loadBreaks();
+      noticeBreak("Перерыв сохранён. Клиенты не смогут выбрать это время.");
+    } catch (error) {
+      noticeBreak(error.message);
+    } finally {
+      saveBreak.disabled = false;
+    }
+  });
+  refreshBreaks.addEventListener("click", loadBreaks);
+
+  const setStatus = (text, error = false) => {
+    status.textContent = text;
+    status.classList.toggle("error", error);
+  };
+
+  const addonLabels = {
+    repair: "Ремонт ногтей",
+    extension: "Донаращивание ногтей",
+    nails: "Наращивание ногтей"
+  };
+
+  function formatServices(booking) {
+    const extra = booking.addons && typeof booking.addons === "object"
+      ? Object.entries(booking.addons)
+        .filter(([key, count]) => addonLabels[key] && Number(count) > 0)
+        .map(([key, count]) => addonLabels[key] + " × " + count)
+      : [];
+    return [booking.service, ...extra].join(" + ");
+  }
+
+  function openContact(booking, reason = "general", date = booking.date, time = booking.time) {
+    const digits = String(booking.phone || "").replace(/\D/g, "");
+    const phone = digits.length === 11 && digits[0] === "8"
+      ? "7" + digits.slice(1) : digits.length === 10 ? "7" + digits : digits;
+    const appointment = date.split("-").reverse().join(".") + " в " + time;
+    const name = booking.name || "Здравствуйте";
+    const prefix = name + ", здравствуйте! Это мастер VERONIKA. ";
+    const templates = {
+      canceled: "К сожалению, ваша запись на " + appointment +
+        " отменена. Напишите нам, чтобы подобрать другое время.",
+      moved: "Ваша запись перенесена на " + appointment +
+        ". Подтвердите, пожалуйста, что вам удобно.",
+      general: "Пишем по поводу вашей записи на " + appointment + "."
+    };
+    contactTitle.textContent = reason === "canceled"
+      ? "Сообщить об отмене" : reason === "moved"
+        ? "Сообщить о переносе" : "Написать клиенту";
+    contactDescription.textContent = "Клиент: " + booking.name + " · Телефон: " +
+      booking.phone + ". Сообщение отправляется только после вашего подтверждения в мессенджере.";
+    contactMessage.value = prefix + templates[reason];
+    const validPhone = /^7\d{10}$/.test(phone);
+    contactWhatsApp.hidden = !validPhone;
+    if (validPhone) {
+      contactWhatsApp.href = "https://wa.me/" + phone + "?text=" +
+        encodeURIComponent(contactMessage.value);
+    }
+    contactCopy.textContent = "Скопировать текст";
+    contactSection.hidden = false;
+    contactSection.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  contactMessage.addEventListener("input", () => {
+    if (contactWhatsApp.hidden) return;
+    const phone = new URL(contactWhatsApp.href).pathname.slice(1);
+    contactWhatsApp.href = "https://wa.me/" + phone + "?text=" +
+      encodeURIComponent(contactMessage.value);
+  });
+
+  function showEdit(booking) {
+    selectedBooking = booking;
+    editDate.min = todayInMoscow();
+    editDate.value = booking.date;
+    editTime.value = booking.time;
+    editDescription.textContent =
+      "Перенос записи №" + booking.id + ": " + booking.name +
+      ". Услуги: " + formatServices(booking) + ".";
+    editNotice.textContent = "Новая дата и время должны быть свободны. Между записями сохраняется 15-минутный интервал.";
+    editNotice.classList.remove("error");
+    editSection.hidden = false;
+    editDate.focus();
+    editSection.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function closeEdit() {
+    selectedBooking = null;
+    editSection.hidden = true;
+    editForm.reset();
+    editNotice.textContent = "";
+  }
+  editCancel.addEventListener("click", closeEdit);
+
+  async function loadAppointments() {
+    const token = getKey();
+    if (!token) return setStatus("Введите ключ администратора.", true);
+    button.disabled = true;
+    setStatus("Загружаем записи...");
+    try {
+      const data = await request("/api/bookings");
+      rows.replaceChildren();
+      const bookings = Array.isArray(data.bookings) ? data.bookings : [];
+      count.textContent = "Всего записей: " + bookings.length;
+      if (!bookings.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 6;
+        td.className = "empty";
+        td.textContent = "Пока нет записей.";
+        tr.appendChild(td);
+        rows.appendChild(tr);
+      }
+      for (const booking of bookings) {
+        const tr = document.createElement("tr");
+        for (const field of fields) {
+          const td = document.createElement("td");
+          td.textContent = field === "service" ? formatServices(booking) : (booking[field] ?? "—");
+          if (field === "service") {
+            const note = document.createElement("div");
+            note.style.cssText = "margin-top:8px;font-size:11px;color:var(--muted)";
+            const names = { telegram: "Telegram", sms: "SMS", none: "без напоминания" };
+            note.textContent = "Напоминание: " + (names[booking.reminder_channel] || "без напоминания");
+            td.append(note);
+          }
+          if (field === "name") td.className = "name";
+          if (field === "phone") td.className = "phone";
+          tr.appendChild(td);
+        }
+        const actions = document.createElement("td");
+        const wrapper = document.createElement("div");
+        wrapper.className = "entry-actions";
+
+        const move = document.createElement("button");
+        move.type = "button";
+        move.className = "ghost action-button";
+        move.textContent = "Перенести";
+        move.setAttribute("aria-label", "Перенести запись " + booking.id);
+        move.addEventListener("click", () => showEdit(booking));
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "action-button danger";
+        remove.textContent = "Удалить";
+        remove.setAttribute("aria-label", "Удалить запись " + booking.id);
+        remove.addEventListener("click", async () => {
+          const confirmed = confirm(
+            "Удалить запись клиента " + booking.name + " на " +
+            booking.date + " в " + booking.time + "?\\nОтменить действие будет нельзя."
+          );
+          if (!confirmed) return;
+          remove.disabled = true;
+          try {
+            await request("/api/bookings/" + encodeURIComponent(booking.id), {
+              method: "DELETE"
+            });
+            closeEdit();
+            await loadAppointments();
+            setStatus("Запись удалена. Время снова доступно, если нет других ограничений.");
+            openContact(booking, "canceled");
+          } catch (error) {
+            setStatus(error.message, true);
+            remove.disabled = false;
+          }
+        });
+        const contact = document.createElement("button");
+        contact.type = "button";
+        contact.className = "ghost action-button";
+        contact.textContent = "Написать";
+        contact.addEventListener("click", () => openContact(booking));
+        wrapper.append(move, remove, contact);
+        actions.appendChild(wrapper);
+        tr.appendChild(actions);
+        rows.appendChild(tr);
+      }
+      closeEdit();
+      setStatus("Записи успешно загружены.");
+      await loadBreaks();
+    } catch (error) {
+      closeEdit();
+      rows.replaceChildren();
+      count.textContent = "Записи скрыты";
+      setStatus(error.message, true);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  editForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!selectedBooking || !editForm.reportValidity()) return;
+    editSave.disabled = true;
+    editNotice.classList.remove("error");
+    editNotice.textContent = "Проверяем расписание и сохраняем перенос...";
+    try {
+      const bookingBeforeMove = selectedBooking;
+      const chosenDate = editDate.value;
+      const chosenTime = editTime.value;
+      const updated = await request(
+        "/api/bookings/" + encodeURIComponent(bookingBeforeMove.id),
+        {
+          method: "PATCH",
+          body: JSON.stringify({ date: chosenDate, time: chosenTime })
+        }
+      );
+      await loadAppointments();
+      setStatus(updated.message || "Запись перенесена.");
+      if (chosenDate !== bookingBeforeMove.date || chosenTime !== bookingBeforeMove.time) {
+        openContact(bookingBeforeMove, "moved", chosenDate, chosenTime);
+      }
+    } catch (error) {
+      editNotice.textContent = error.message;
+      editNotice.classList.add("error");
+    } finally {
+      editSave.disabled = false;
+    }
+  });
+
+  button.addEventListener("click", loadAppointments);
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter") button.click();
+  });
+})();
+</script>
+</body>
+</html>
